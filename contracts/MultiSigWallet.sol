@@ -1,72 +1,60 @@
-pragma solidity ^0.8.0;
+pragma solidity ^0.7.0;
 
 contract MultiSigWallet {
-
-    address[] owners;
-
-    mapping(address => bool) public isOwner;
-
-    event Deposit(address _from, uint _wad);
-
-    /**
-    *@notice Arbitrary number. Maybe change?
-     */
-    uint constant MAX_OWNER_COUNT = 20;
     
-    /**
-    *@notice Necessary checks.
-     */
-    modifier validRequirement(uint numOfOwners, uint _required){
-        require(numOfOwners <= MAX_OWNER_COUNT
-        && _required <= numOfOwners
-        && numOfOwners != 0
-        && _required != 0
-        );
+    address[] public owners;
+    mapping(address => bool) public isOwner;
+    uint public numConfirmationsRequired;
+    
+    struct Transaction {
+        address to;
+        uint value;
+        bytes data;
+        bool executed;
+        mapping(address => bool) isConfirmed;
+        uint numConfirmations;
     }
-
-
-    /**
-    *@notice The constructor of the contract.
-     */
-    function MultiSig(address[] memory _owners, uint _required) 
-        public 
-        validRequirement(owners.length, _required) 
-    {
-        for(uint i = 0; i <=owners.length; i++){
-            require(!isOwner[_owners[i]] && _owners[i] != 0);
-            isOwner[_owners[i]] = true;
+    
+    modifier onlyOwner() {
+        require(isOwner[msg.sender], "Not owner");
+        _;
+    }
+    
+    event Deposit(address indexed sender, uint amount, uint balance);
+    event SubmitTransaction(
+        address indexed owner,
+        uint indexed txIndex,
+        address indexed to,
+        uint value,
+        bytes data
+    );
+    
+    constructor(address[] memory _owners, uint _numConfirmationsRequired) {
+    require(_owners.length > 0, "owners required");
+    require(_numConfirmationsRequired > 0 && _numConfirmationsRequired <= _owners.length,
+        "Invalid number of confirmations");
+        
+        for(uint i = 0; i <= _owners.length; i++){
+            address owner = _owners[i];
+            require(owner != address(0), "Invalid owner");
+            require(!isOwner[owner], "Owner not unique");
+            
+            isOwner[owner] = true;
+            owners.push(owner);
         }
-    } 
-
-    /**
-    *@notice Initial step in performing a transaction
-     */
-    function submitTransaction(address _destination, uint _value, bytes data) 
-        public 
-        returns(uint transactionId) 
-    {
-        transactionId = addTransaction(_destination, _value, _data);
-        confirmTransaction(transactionId);
+        
+        numConfirmationsRequired = _numConfirmationsRequired;
     }
-
-    function confirmTransaction() public {
-    }
-
-    function executeTransaction() public {
-    }
-
-    function revokeConfirmation() public {
-    }
-
-    /**
-    *@notice This is the actual deposit function for ether.
-     */
+    
+    //for deposits
     receive() external payable {
-        if(msg.value > 0){
-            emit Deposit(msg.sender, msg.value);
-        }
+        emit Deposit(msg.sender, msg.value, address(this).balance);
     }
-
-
-
+    
+    function submitTransaction(address _to, uint _value, bytes memory _data) public onlyOwner {
+        
+    }
+    
+    
+    
 }
