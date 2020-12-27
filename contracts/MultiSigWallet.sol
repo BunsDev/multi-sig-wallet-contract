@@ -98,7 +98,10 @@ contract MultiSigWallet {
     notExecuted(_txIndex)
     notConfirmed(_txIndex)
     {
-        transactions[_txIndex].numConfirmations++;
+        Transaction storage transaction = transactions[_txIndex];
+
+        transaction.isConfirmed[msg.sender] = true;
+        transaction.numConfirmations++;
         
         emit ConfirmTransaction(msg.sender, _txIndex);
     }
