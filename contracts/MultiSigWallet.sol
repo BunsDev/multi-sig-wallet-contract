@@ -13,12 +13,7 @@ contract MultiSigWallet {
     
     event ConfirmTransaction(address indexed owner, uint indexed txIndex);
     event ExecuteTransaction(address indexed owner, uint indexed txIndex);
-    
-    /*
-    
-    ["0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2", "0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db", "0x5B38Da6a701c568545dCfcB03FcB875f56beddC4"]
-    
-    */
+    event RevokeConfirmation(address indexed owner, uint indexed txIndex);
     
     struct Transaction {
         address to;
@@ -81,7 +76,7 @@ contract MultiSigWallet {
     }
     
     function submitTransaction(address _to, uint _value, bytes memory _data) 
-        public onlyOwner 
+        public payable onlyOwner 
     {
         uint txIndex = transactions.length;
         
@@ -123,6 +118,22 @@ contract MultiSigWallet {
         require(success, "transaction failed");
         
         emit ExecuteTransaction(msg.sender, _txIndex);
+    }
+
+    function revokeConfirmation(uint _txIndex) 
+        public 
+        onlyOwner 
+        txExists(_txIndex) 
+        notExecuted(_txIndex) 
+    {
+        Transaction storage transaction = transactions[_txIndex];
+        
+        require(transaction.isConfirmed[msg.sender], 'Transaction not confirmed');
+        
+        transaction.isConfirmed[msg.sender] = false;
+        transaction.numConfirmations--;
+        
+        emit RevokeConfirmation(msg.sender, _txIndex);
     }
     
     
