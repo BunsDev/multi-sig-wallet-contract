@@ -92,11 +92,11 @@ contract MultiSigWallet {
     }
     
     function confirmTransaction(uint _txIndex) 
-    public 
-    onlyOwner
-    txExists(_txIndex)
-    notExecuted(_txIndex)
-    notConfirmed(_txIndex)
+        public 
+        onlyOwner
+        txExists(_txIndex)
+        notExecuted(_txIndex)
+        notConfirmed(_txIndex)
     {
         Transaction storage transaction = transactions[_txIndex];
 
@@ -139,6 +139,12 @@ contract MultiSigWallet {
         emit RevokeConfirmation(msg.sender, _txIndex);
     }
     
+    //confirmation getter for testing
+    function fetchConfirmations(uint _txIndex) public view returns(uint){
+        Transaction storage transaction = transactions[_txIndex];
+        uint conf = transaction.numConfirmations;
+        return conf;
+    }
     
     
     
