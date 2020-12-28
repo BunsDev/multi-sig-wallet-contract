@@ -14,7 +14,7 @@ const tokens = (n) => {
 }
 
 contract('MultiSigWallet', ([alice, bob, carol, dave]) => {
-    let multiSigInstance, testContract
+    let multiSigInstance, testContract, result
     const numRequired = 2
 
     before(async() => {
@@ -56,8 +56,6 @@ contract('MultiSigWallet', ([alice, bob, carol, dave]) => {
         })
 
         it('confirms submitted transactions', async() => {
-            let result
-
             //check number of confirmations
             result = await multiSigInstance.fetchConfirmations(0)
             assert.equal(result, 0)
@@ -78,8 +76,6 @@ contract('MultiSigWallet', ([alice, bob, carol, dave]) => {
         })
 
         it('should revoke confirmations', async() => {
-            let result
-
             //recheck confirmations
             result = await multiSigInstance.fetchConfirmations(0)
             assert.equal(result, 2)
@@ -90,6 +86,26 @@ contract('MultiSigWallet', ([alice, bob, carol, dave]) => {
             //check number of confirmations subtracted correctly
             result = await multiSigInstance.fetchConfirmations(0)
             assert.equal(result, 1, 'confirmation number did not subtract correctly')
+        })
+
+        it('should not execute partially confirmed transaction', async() => {
+            await multiSigInstance.executeTransaction(0, { from: alice }).should.be.rejected
+
+            //reconfirm transaction
+            await multiSigInstance.confirmTransaction(0, { from: bob })
+        })
+
+        it('should execute confirmed transaction', async() => {
+            //check confirmations
+            result = await multiSigInstance.fetchConfirmations(0)
+            assert.equal(result, 2)
+
+            //recheck required confirmations
+            result = await multiSigInstance.numConfirmationsRequired.call()
+            assert.equal(result, 2)
+
+            //execute transaction
+            await multiSigInstance.executeTransaction(0, { from: bob })
         })
     })
 })
