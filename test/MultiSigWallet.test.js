@@ -36,6 +36,20 @@ contract('MultiSigWallet', ([alice, bob, carol, dave]) => {
             const carolAcct = await multiSigInstance.owners(2)
             assert.equal(carolAcct, carol, 'wallet not deployed correctly')
         })
+
+        it('accepts deposits', async() => {
+            //check contract balance
+            const contractAddress = multiSigInstance.address
+            result = await web3.eth.getBalance(contractAddress)
+            assert.equal(result, 0)
+
+            //deposit eth into contract
+            await multiSigInstance.sendTransaction({from: alice, value: tokens('1')})
+
+            //check contract balance
+            result = await web3.eth.getBalance(contractAddress)
+            assert.equal(result.toString(), tokens('1'))
+        })
     })
 
     describe('multiSig transaction', async() => {        
@@ -100,12 +114,20 @@ contract('MultiSigWallet', ([alice, bob, carol, dave]) => {
             result = await multiSigInstance.fetchConfirmations(0)
             assert.equal(result, 2)
 
+            //check dave's initial balance
+            result = await web3.eth.getBalance(dave)
+            assert.equal(result, tokens('100'))
+
             //recheck required confirmations
             result = await multiSigInstance.numConfirmationsRequired.call()
             assert.equal(result, 2)
 
             //execute transaction
-            await multiSigInstance.executeTransaction(0, { from: bob })
+            await multiSigInstance.executeTransaction(0, { from: alice })
+
+            //check dave's updated balance
+            result = await web3.eth.getBalance(dave)
+            assert.equal(result, tokens('101'))
         })
     })
 })

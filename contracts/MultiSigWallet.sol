@@ -116,7 +116,6 @@ contract MultiSigWallet {
         require(transaction.numConfirmations >= numConfirmationsRequired, 'Cannot execute transaction');
         transaction.executed = true;
         
-        //double check this low level call
         (bool success, ) = transaction.to.call.value(transaction.value)(transaction.data);
         require(success, "transaction failed");
         
