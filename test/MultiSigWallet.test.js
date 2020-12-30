@@ -14,12 +14,11 @@ const tokens = (n) => {
 }
 
 contract('MultiSigWallet', ([alice, bob, carol, dave]) => {
-    let multiSigInstance, testContract, result
+    let multiSigInstance, result
     const numRequired = 2
 
     before(async() => {
         multiSigInstance = await MultiSigWallet.new([alice, bob, carol], numRequired)
-
     })
 
     describe('multiSigWallet deployment', async() => {
@@ -89,7 +88,7 @@ contract('MultiSigWallet', ([alice, bob, carol, dave]) => {
             assert.equal(result, 2)
         })
 
-        it('should revoke confirmations', async() => {
+        it('should revoke confirmation', async() => {
             //recheck confirmations
             result = await multiSigInstance.fetchConfirmations(0)
             assert.equal(result, 2)
@@ -114,7 +113,7 @@ contract('MultiSigWallet', ([alice, bob, carol, dave]) => {
             result = await multiSigInstance.fetchConfirmations(0)
             assert.equal(result, 2)
 
-            //check dave's initial balance
+            //check recipient's initial balance
             result = await web3.eth.getBalance(dave)
             assert.equal(result, tokens('100'))
 
@@ -125,7 +124,7 @@ contract('MultiSigWallet', ([alice, bob, carol, dave]) => {
             //execute transaction
             await multiSigInstance.executeTransaction(0, { from: alice })
 
-            //check dave's updated balance
+            //check recipient's updated balance
             result = await web3.eth.getBalance(dave)
             assert.equal(result, tokens('101'))
         })
