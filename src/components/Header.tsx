@@ -15,7 +15,10 @@ const Container = styled.div`
     justify-content: space-between;
 `;
 
-const WalletWrapper = styled.div`
+const WalletWrapper = styled.button`
+    background-color: white;
+    border-bottom: none;
+    border-top: none;
     height: 100%;
     width: 22rem;
     margin-right: 1.25rem;
@@ -25,6 +28,10 @@ const WalletWrapper = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
+
+    :hover {
+        cursor: pointer;
+    }
 `;
 
 const UserWallet = styled.div`
@@ -53,8 +60,20 @@ const BoxText = styled.span`
 
 const Arrow = styled.div`
     margin-right: 1rem;
-    margin-left: 1.6rem;
+    margin-left: 1rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    :hover {
+        background-color: #E8E7E6;
+        cursor: pointer;
+    }
 `;
+
 
 const Div = styled.div`
     display: flex;
