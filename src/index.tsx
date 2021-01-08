@@ -9,7 +9,7 @@ const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;
     padding: 0;
-    background: teal;
+    background: #E8E7E6;
     font-family: Open-Sans, Helvetica, Sans-Serif;
 }
 `;
