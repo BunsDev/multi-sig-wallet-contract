@@ -48,7 +48,7 @@ const Box = styled.div`
     font-size: .8rem;
     height: 1.3rem;
     width: 3.5rem;
-    background-color: #E8E7E6;
+    background-color: #ECECEC;
     display: flex;
     justify-content: center;
 `;
@@ -69,7 +69,7 @@ const Arrow = styled.div`
     align-items: center;
 
     :hover {
-        background-color: #E8E7E6;
+        background-color: #ECECEC;
         cursor: pointer;
     }
 `;
