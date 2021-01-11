@@ -8,7 +8,7 @@ interface State {
 }
 
 const INITIAL_STATE: State = {
-    account: '',
+    account: '0x1234',
     web3: null,
 };
 
@@ -37,4 +37,62 @@ function reducer(state: State = INITIAL_STATE, action: Action) {
         default:
             return state;
     }
+}
+
+const Web3Context = createContext({
+    state: INITIAL_STATE,
+    updateAccount: (_data: { account: string; web3?: Web3 }) => {},
+});
+
+export function useWeb3Context() {
+    return useContext(Web3Context)
+}
+
+interface ProviderProps {}
+
+export const Provider: React.FC<ProviderProps> = ({ children }) => {
+    const [state, dispatch] = useReducer(reducer, INITIAL_STATE)
+
+    function updateAccount(data: { account: string; web3?: Web3 }) {
+        dispatch({
+            type: UPDATE_ACCOUNT,
+            ...data
+        });
+    }
+
+
+return (
+    <Web3Context.Provider
+        value={useMemo(
+            () => ({
+                state,
+                updateAccount,
+            }),
+            [state]
+        )}
+    >
+        { children }
+    </Web3Context.Provider>
+    )
+}
+
+export function Updater() {
+    const { state } = useWeb3Context();
+
+    useEffect(() => {
+        if (state.web3) {
+            const unsubscribe = subscribeToAccount(state.web3, (error, account) => {
+                if (error) {
+                    console.log(error);
+                }
+                if(account !== undefined && account !== state.account) {
+                    window.location.reload()
+                }
+            });
+
+            return unsubscribe;
+        }   
+    }, [state.web3, state.account]);
+
+    return null;
 }

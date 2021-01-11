@@ -1,5 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
+import { useWeb3Context } from '../context/Web3'
+import { unlockAccount } from '../api/web3'
+import useAsync from './useAsync'
 
 const Wrapper = styled.div`
     height: 3.2rem;
@@ -82,8 +85,27 @@ const Div = styled.div`
 
 export default function Header() {
 
+    const {
+        state: { account },
+        updateAccount
+    } = useWeb3Context()
+
+    const { pending, error, call } = useAsync(unlockAccount)
+
+    async function onClickConnect() {
+        const { error, data } = await call(null)
+
+        if (error) {
+            console.log(error)
+        }
+        if (data) {
+            updateAccount(data)
+        }
+    }
+
     let walletName : string = 'MetaMask'
-    let address : string = '0xfaa7...373B'
+    let address: unknown = {account}
+    let addSli: string = (address as string).slice(5, 37)
     let network : string = 'Mainnet'
 
     return (
@@ -91,11 +113,11 @@ export default function Header() {
             <Container>
                 <Title>Multisig Wallet</Title>
             </Container>
-            <WalletWrapper>
+            <WalletWrapper onClick={() => onClickConnect()}>
                 <UserWallet>
                     { walletName }
                     <br/>
-                    { address }
+                    Address: { addSli }
                 </UserWallet>
                 <Div>
                 <Box>

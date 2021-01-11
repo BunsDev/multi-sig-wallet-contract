@@ -4,6 +4,10 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { createGlobalStyle } from "styled-components";
+import {
+  Provider as Web3Provider,
+  Updater as Web3Updater
+} from './context/Web3'
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -17,7 +21,10 @@ const GlobalStyle = createGlobalStyle`
 ReactDOM.render(
   <React.StrictMode>
     <GlobalStyle />
+    <Web3Provider>
       <App />
+      <Web3Updater />
+    </Web3Provider>
   </React.StrictMode>,
   document.getElementById("root")
 );
