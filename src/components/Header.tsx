@@ -104,8 +104,6 @@ export default function Header() {
     }
 
     let walletName : string = 'MetaMask'
-    let address: unknown = {account}
-    let addSli: string = (address as string).slice(5, 37)
     let network : string = 'Mainnet'
 
     return (
@@ -117,7 +115,7 @@ export default function Header() {
                 <UserWallet>
                     { walletName }
                     <br/>
-                    Address: { addSli }
+                    Address: { account }
                 </UserWallet>
                 <Div>
                 <Box>
